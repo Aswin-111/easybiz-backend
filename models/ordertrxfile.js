@@ -97,6 +97,6 @@ const Ordertrxfile = db.define(
   { timestamps: false }
 );
 
-Ordertrxfile.sync({ alter: true });
+// Ordertrxfile.sync({ alter: true });
 
 module.exports = Ordertrxfile;

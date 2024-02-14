@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "sync": "node sync.js"
+    
+    
+
+    "sync" : "node ./models/sync.js"
   },
   "keywords": [],
   "author": "",

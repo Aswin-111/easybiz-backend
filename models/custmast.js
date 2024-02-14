@@ -55,6 +55,6 @@ const Custmast = db.define(
   { timestamps: false }
 );
 
-Custmast.sync({alter : true});
+// Custmast.sync({alter : true});
 
 module.exports = Custmast;

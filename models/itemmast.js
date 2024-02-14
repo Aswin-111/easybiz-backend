@@ -90,6 +90,6 @@ const Itemmast = db.define(
   { timestamps: false }
 );
 
-Itemmast.sync({ alter: true });
+// Itemmast.sync({ alter: true });
 
 module.exports = Itemmast;

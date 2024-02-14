@@ -95,6 +95,6 @@ const Ordmast = db.define(
   { timestamps: false }
 );
 
-Ordmast.sync({ alter: true });
+// Ordmast.sync({ alter: true });
 
 module.exports = Ordmast;
