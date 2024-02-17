@@ -4,7 +4,7 @@ const login = require('./models/user')
 const db = require('./models/db')
 const items = require('./models/itemmast')
 const app = express()
-
+const cust = require('./models/custmast')
 
 app.use(cors())
 app.use(express.json())
@@ -61,6 +61,12 @@ app.post("/cust", async (req, res) => {
 
 app.post('/query',async (req,res)=>{
     let response = await db.query(req.body.query)
+    if(response){
+    return res.json({response:"success"})
+    }
+    else{
+      return res.json({response: "error"})
+    }
 })
 
 
@@ -140,4 +146,6 @@ app.post("/order", async (req, res) => {
     res.json({ status: "failed", message: "An error occurred" });
   }
 });
-app.listen(3000)
+app.listen(7000)
+
+

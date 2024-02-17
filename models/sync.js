@@ -8,12 +8,14 @@ const ordermast = require('./ordermast')
 const order = require('./ordertrxfile')
 
 
-user.sync()
-itemmast.sync()
-custmast.sync()
+
+user.sync({alter:true})
+itemmast.sync({alter:true})
+custmast.sync({alter:true})
 
 
-ordermast.sync()
+ordermast.sync({alter:true})
 
 
-order.sync()
+order.sync({alter:true})
+
