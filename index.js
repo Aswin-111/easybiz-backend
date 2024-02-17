@@ -5,7 +5,7 @@ const db = require('./models/db')
 const items = require('./models/itemmast')
 const app = express()
 const cust = require('./models/custmast')
-const items = require('./models/itemmast')
+
 app.use(cors())
 app.use(express.json())
 app.post('/login',async (req,res)=>{
