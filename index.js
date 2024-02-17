@@ -43,7 +43,7 @@ app.post("/cust", async (req, res) => {
     else{
       return res.status(200).json({ status: "success",result });
     }
-    return res.status(500).json({ status: "error" });
+    
   });
  
 
@@ -55,10 +55,13 @@ app.post("/cust", async (req, res) => {
     console.log('items route ',compcode,req.body);
     const result = await items.findAll({where : {compcode: compcode}});
     if(!result){
-      return res.json({ status: "failed" });
+      return res.status(500).json({ status: "failed" });
   
       }
-    return res.json({ status: "success", data: result });
+      else{
+        return res.status(200).json({ status: "success",result });
+      }
+    
 
   });
 
