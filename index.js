@@ -37,8 +37,11 @@ app.post("/cust", async (req, res) => {
     const result = await cust.findAll({where : {compcode: compcode}});
     
     if(!result){
-    return res.status(200).json({ status: "failed" });
+    return res.status(404).json({ status: "failed" });
 
+    }
+    else{
+      return res.status(200).json({ status: "success",result });
     }
     return res.status(500).json({ status: "error" });
   });
