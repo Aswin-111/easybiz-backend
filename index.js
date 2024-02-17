@@ -28,7 +28,7 @@ app.post('/login',async (req,res)=>{
 
 app.post("/cust", async (req, res) => {
     const { compcode } = req.body;
-    const result = await login.findOne({where : {compcode: compcode}});
+    const result = await cust.findAll({where : {compcode: compcode}});
     
     if(!result){
     return res.json({ status: "failed" });
