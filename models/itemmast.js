@@ -3,7 +3,7 @@ const db = require("./db");
 
 
 const Itemmast = db.define(
-  "Itemmast",
+  "itemmast",
   {
     //compcode varchar(10),userid varchar(6) , username varchar(16), password varchar(100), userlevel varchar(1)
     compcode: {
@@ -90,6 +90,5 @@ const Itemmast = db.define(
   { timestamps: false }
 );
 
-// Itemmast.sync({ alter: true });
 
 module.exports = Itemmast;
