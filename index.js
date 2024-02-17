@@ -44,7 +44,7 @@ app.post("/cust", async (req, res) => {
   
   
     console.log('items route ',compcode,req.body);
-    const result = await items.findOne({where : {compcode: compcode}});
+    const result = await items.findAll({where : {compcode: compcode}});
     if(!result){
       return res.json({ status: "failed" });
   
