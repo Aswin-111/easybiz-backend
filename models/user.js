@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const db = require("./db");
 
-const User = db.define("User", {
+const User = db.define("user", {
   //compcode varchar(10),userid varchar(6) , username varchar(16), password varchar(100), userlevel varchar(1)
  
   userid: {

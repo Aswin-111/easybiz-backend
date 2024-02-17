@@ -9,13 +9,15 @@ const order = require('./ordertrxfile')
 
 
 
-user.sync({alter:true})
-itemmast.sync({alter:true})
-custmast.sync({alter:true})
+user.sync({force:true})
+itemmast.sync({force:true})
+custmast.sync({force:true})
 
 
-ordermast.sync({alter:true})
+ordermast.sync({force:true})
 
 
-order.sync({alter:true})
+order.sync({force:true})
 
+
+console.log("created all tables")
