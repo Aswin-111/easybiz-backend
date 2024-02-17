@@ -6,14 +6,15 @@ const items = require('./models/itemmast')
 const app = express()
 const cust = require('./models/custmast')
 
+
 app.use(cors())
 app.use(express.json({limit : "10mb"}))
 app.post('/login',async (req,res)=>{
-
+try{
     const {username,password} = req.body
     console.log(username,password)
     const result = await login.findOne({where : {username: username}})
-   
+  
     const {compcode} = result.dataValues.compcode
     const {log} = console
 
@@ -24,6 +25,11 @@ app.post('/login',async (req,res)=>{
 
     }
     return res.status(400).json({message:"Invalid credentials",status:"false"})
+
+  }
+  catch (err) {
+    return res.status(500).json({message:err,status:"false"})
+  }
 })
 
 app.post("/cust", async (req, res) => {
