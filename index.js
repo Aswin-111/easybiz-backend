@@ -5,7 +5,7 @@ const db = require('./models/db')
 const items = require('./models/itemmast')
 const app = express()
 const cust = require('./models/custmast')
-
+const items = require('./models/itemmast')
 app.use(cors())
 app.use(express.json())
 app.post('/login',async (req,res)=>{
@@ -31,10 +31,10 @@ app.post("/cust", async (req, res) => {
     const result = await cust.findAll({where : {compcode: compcode}});
     
     if(!result){
-    return res.json({ status: "failed" });
+    return res.status(200).json({ status: "failed" });
 
     }
-    return res.json({ status: "success", data: result });
+    return res.status(500).json({ status: "error" });
   });
  
 
@@ -44,7 +44,7 @@ app.post("/cust", async (req, res) => {
   
   
     console.log('items route ',compcode,req.body);
-    const result = await login.findOne({where : {compcode: compcode}});
+    const result = await items.findOne({where : {compcode: compcode}});
     if(!result){
       return res.json({ status: "failed" });
   
