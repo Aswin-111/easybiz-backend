@@ -3,17 +3,20 @@ const db = require("./db");
 
 const User = db.define("User", {
   //compcode varchar(10),userid varchar(6) , username varchar(16), password varchar(100), userlevel varchar(1)
-  compcode: {
-    primaryKey: true,
-    type: DataTypes.STRING(10),
-    allowNull: false,
-  },
+ 
   userid: {
     primaryKey: true,
     
     type: DataTypes.STRING(6),
     allowNull: false,
+    autoIncrement : true
   },
+   compcode: {
+    primaryKey: true,
+    type: DataTypes.STRING(10),
+    allowNull: false,
+  },
+ 
 
   username: {
     type: DataTypes.STRING(16),

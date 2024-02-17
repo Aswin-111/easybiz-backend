@@ -5,7 +5,7 @@ const db = require('./models/db')
 const items = require('./models/itemmast')
 const app = express()
 const cust = require('./models/custmast')
-
+insert into users (compcode,username,password) values (10001,"easybiz","ez123")
 app.use(cors())
 app.use(express.json())
 app.post('/login',async (req,res)=>{
