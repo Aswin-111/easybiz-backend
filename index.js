@@ -45,7 +45,19 @@ app.post("/cust", async (req, res) => {
     }
     
   });
- 
+  app.post("/shop", async (req, res) => {
+    const { custcode } = req.body;
+    const result = await cust.findOne({where : {custcode: custcode}});
+    
+    if(!result){
+    return res.status(404).json({ status: "failed" });
+
+    }
+    else{
+      return res.status(200).json({ status: "success",result });
+    }
+    
+  });
 
 
   app.post("/items", async (req, res) => {
