@@ -52,7 +52,6 @@ app.post("/cust", async (req, res) => {
     const {compcode,custcode} = req.body;
   
   
-    console.log('items route ',compcode,req.body);
     const itemlist = await items.findAll({where : {compcode: compcode}});
     const custinfo = await cust.findOne({where : {custcode: custcode}});
 
