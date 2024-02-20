@@ -53,7 +53,7 @@ app.post("/cust", async (req, res) => {
   
   
     console.log('items route ',compcode,req.body);
-    const items = await items.findAll({where : {compcode: compcode}});
+    const itemlist = await items.findAll({where : {compcode: compcode}});
     const custinfo = await cust.findOne({where : {custcode: custcode}});
 
     if(!result){
@@ -61,7 +61,7 @@ app.post("/cust", async (req, res) => {
   
       }
       else{
-        return res.status(200).json({ status: "success",result:items,custinfo:custinfo });
+        return res.status(200).json({ status: "success",result:itemlist,custinfo:custinfo });
       }
     
 
