@@ -51,18 +51,22 @@ app.post("/cust", async (req, res) => {
   app.post("/shopdetailed", async (req, res) => {
     const {compcode,custcode} = req.body;
   
-  
+  try{
     const itemlist = await items.findAll({where : {compcode: compcode}});
-    const custinfo = await cust.findOne({where : {custcode: custcode}});
+    const custinfo = await cust.findOne({where : {custcode: custcode}})
+    return res.status(200).json({ status: "success",itemlist:itemlist,custinfo:custinfo });
 
-    if(!result){
-      return res.status(404).json({ status: "failed" });
-  
-      }
-      else{
-        return res.status(200).json({ status: "success",itemlist:itemlist,custinfo:custinfo });
-      }
+  }
     
+  
+      
+      
+      
+    
+        catch(err){
+      return res.status(404).json({ status: "failed" });
+          
+        }
 
   });
 
