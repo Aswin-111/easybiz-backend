@@ -61,7 +61,7 @@ app.post("/cust", async (req, res) => {
   
       }
       else{
-        return res.status(200).json({ status: "success",result:itemlist,custinfo:custinfo });
+        return res.status(200).json({ status: "success",itemlist:itemlist,custinfo:custinfo });
       }
     
 
