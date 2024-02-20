@@ -60,19 +60,19 @@ app.post("/cust", async (req, res) => {
   });
 
 
-  app.post("/items", async (req, res) => {
-    const {compcode} = req.body;
+  app.post("/shopdetailed", async (req, res) => {
+    const {compcode,custcode} = req.body;
   
   
     console.log('items route ',compcode,req.body);
-    const result = await items.findAll({where : {compcode: compcode}});
-   
+    const items = await items.findAll({where : {compcode: compcode}});
+    const custinfo = await cust.findOne({where : {custcode : custcode}});
     if(!result){
       return res.status(404).json({ status: "failed" });
   
       }
       else{
-        return res.status(200).json({ status: "success",result });
+        return res.status(200).json({ status: "success",result:items,custinfo:custinfo });
       }
     
 
