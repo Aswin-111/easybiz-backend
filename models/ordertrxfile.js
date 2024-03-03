@@ -25,7 +25,7 @@ const Ordertrxfile = db.define(
       type: DataTypes.STRING(10),
       allowNull: false,
     },
-    itemocode: {
+    itemcode: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },

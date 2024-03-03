@@ -91,6 +91,7 @@ const Ordmast = db.define(
       defaultValue: "N",
       allowNull: false,
     },
+    
   },
   { timestamps: false }
 );

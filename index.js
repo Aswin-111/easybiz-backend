@@ -1,12 +1,30 @@
 const express = require('express')
 const cors = require('cors')
+const app = express()
+const {Sequelize} = require('sequelize')
 const login = require('./models/user')
 const db = require('./models/db')
 const items = require('./models/itemmast')
-const app = express()
 const cust = require('./models/custmast')
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const Ordmast = require('./models/ordermast')
+const Ordertrxfile = require('./models/ordertrxfile')
 app.use(cors())
 app.use(express.json({limit : "10mb"}))
 app.post('/login',async (req,res)=>{
@@ -32,8 +50,33 @@ try{
   }
 })
 
+
+
+app.post("/getOrders", async (req, res) => {
+ 
+  const { compcode } = req.body;
+const result = await Ordmast.findAll({where : {compcode: compcode}});
+
+
+result.forEach(function (i){
+
+console.log(i.dataValues)
+
+})
+if(!result){
+return res.status(404).json({ status: "failed" });
+
+}
+else{
+return res.status(200).json({ status: "success",result });
+}
+
+});
+
+
 app.post("/cust", async (req, res) => {
-    const { compcode } = req.body;
+ 
+          const { compcode } = req.body;
     const result = await cust.findAll({where : {compcode: compcode}});
     
     if(!result){
@@ -70,7 +113,24 @@ app.post("/cust", async (req, res) => {
 
   });
 
+
   
+  
+
+
+  app.post("/item", async (req, res) => {
+    const { itemcode } = req.body;
+    const result = await items.findOne({where : {itemcode: itemcode}});
+    
+    if(!result){
+    return res.status(404).json({ status: "failed" });
+
+    }
+    else{
+      return res.status(200).json({ status: "success",result });
+    }
+    
+  });
   
 
 
@@ -85,61 +145,159 @@ app.post('/query',async (req,res)=>{
       return res.json({response: "error"})
     }
 })
-
-
 app.post("/order", async (req, res) => {
-  const t = await sequelize.transaction();
+  
+// const details = [{
+//   compcode: '10000',
+//   itemname: 'Bubble Gum',
+//   itemcess: 0.01,
+//   itemnetcost: 1.99,
+//   itemcode: '10001',
+//   itemcost: 0.49,
+//   itemmrp: 2.49,
+//   itemqty: '2',
+//   itemtax: 5,
+//   itemuom: 'PCS',
+//   itemprice: '1.90',
+//   itemfreeqty: 0,
+//   trxtotal: '3.99',
+//   itemdiscount: 0,
+//   remarks: ''
+// },
+// {
+//   compcode: '10000',
+//   itemname: 'Chocolate Bar',
+//   itemcess: 0.03,
+//   itemnetcost: 3.99,
+//   itemcode: '10003',
+//   itemcost: 1.99,
+//   itemmrp: 4.49,
+//   itemqty: '5',
+//   itemtax: 28,
+//   itemuom: 'PCS',
+//   itemprice: '3.12',
+//   itemfreeqty: 0,
+//   trxtotal: '19.97',
+//   itemdiscount: 0,
+//   remarks: ''
+// },
+// {
+//   compcode: '10000',
+//   itemname: 'Biscuit',
+//   itemcess: 0.04,
+//   itemnetcost: 4.49,
+//   itemcode: '10005',
+//   itemcost: 2.49,
+//   itemmrp: 4.99,
+//   itemqty: '2',
+//   itemtax: 0.12,
+//   itemuom: 'PCS',
+//   itemprice: '4.48',
+//   itemfreeqty: 0,
+//   trxtotal: '8.97',
+//   itemdiscount: 0,
+//   remarks: ''
+// }
+// ]
+// console.log(req.body)
+const details = req.body.details
+const cust = req.body.cust
+
+
+// const cust = {
+//   compcode: '10000',
+//   orddate: '2024-02-25',
+//   ordtime: '21:27',
+//   custcode: '12',
+//   usercode: 1,
+//   username: 'albin',
+//   latlong: '9.5143374,76.3290963',
+//   sysname: 'RMX1827',
+//   custaddress: 'Shop 12, Alappuzha',
+//   custphone: '1233456782',
+//   custarea: 'Alappuzha',
+//   custtype: 'R',
+//   trxdiscount: '10',
+//   trxtotal: 32.93,
+//   trxnetamount: 32.93,
+//   statusflag: 'N'
+// }
+  // console.log(cust)
+  // console.log(details)
+
+  
+  const t = await db.transaction();
   try {
+
+    
     const ordNumberResult = await Ordmast.findOne({
-      attributes: [[Sequelize.fn('MAX', Sequelize.col('ordnum')), 'ord_number']],
-      where: { compcode: req.body[0].comp_code },
+      attributes: [[Sequelize.fn('MAX', Sequelize.col('ordnum')), 'ordnum']],
+      where: { compcode:cust.compcode },
       transaction: t
     });
 
     let ordNumber = 1;
-    if (ordNumberResult && ordNumberResult.ord_number) {
-      ordNumber = ordNumberResult.ord_number + 1;
+    if (ordNumberResult && ordNumberResult.ordnum) {
+      
+      // console.log(ordNumberResult.ordnum)
+      ordNumber = ordNumberResult.ordnum + 1;
     }
 
     const ordMastCreateResult = await Ordmast.create({
-      compcode: req.body[0].comp_code,
+      compcode:cust.compcode,
       ordnum: ordNumber,
-      orddate: req.body[0].ord_date.split(" ")[0],
-      ordtime: req.body[0].ord_time.split(" ")[1].split(".")[0],
-      custcode: req.body[0].cust_code,
-      usercode: req.body[0].user_code,
-      username: req.body[0].user_name,
-      latlong: req.body[0].lat_long,
-      sysname: req.body[0].system_name,
-      custaddress: req.body[0].cust_address,
-      custphone: req.body[0].cust_phone,
-      custarea: req.body[0].cust_area,
-      custtype: req.body[0].cust_type,
-      trxdiscount: req.body[0].trx_discount,
-      trxtotal: req.body[0].trx_total,
-      trxnetamount: req.body[0].trx_netamount,
-      statusflag: req.body[0].status_flag,
+      orddate:cust.orddate,
+      ordtime:cust.ordtime,
+      custcode:cust.custcode,
+      usercode:cust.usercode,
+      username:cust.username,
+      latlong:cust.latlong,
+      sysname:cust.sysname,
+      custaddress:cust.custaddress,
+      custphone:cust.custphone,
+      custarea:cust.custarea,
+      custtype:cust.custtype,
+      trxdiscount:cust.trxdiscount,
+      trxtotal:cust.trxtotal,
+      trxnetamount:cust.trxnetamount,
+      statusflag:cust.statusflag,
     }, { transaction: t });
 
-    for (const orderItem of req.body) {
+    for (const orderItem of details) {
+      let lineNumber = 1;
+
+      const lineNumberResult = await Ordertrxfile.findOne({
+        attributes: [[Sequelize.fn('MAX', Sequelize.col('linenum')), 'linenum']],
+        where: { compcode:cust.compcode,ordnum:ordNumber },
+        transaction: t
+      });
+  
+      if (lineNumberResult && lineNumberResult.linenum) {  
+        // console.log(lineNumberResult.linenum)
+        lineNumber = lineNumberResult.linenum + 1;
+      }
+      console.log('ordernum',ordNumber,'linenum',lineNumber)
       await Ordertrxfile.create({
-        compcode: orderItem.comp_code,
+        compcode: orderItem.compcode,
         ordnum: ordNumber,
-        linenum: orderItem.line_num,
-        orddate: orderItem.ord_date.split(" ")[0],
-        itemcode: orderItem.item_code,
-        itemname: orderItem.item_name,
-        itemqty: orderItem.item_qty,
-        itemfreeqty: orderItem.item_free_qty,
-        itemmrp: orderItem.item_mrp,
-        itemprice: orderItem.item_price,
-        itemtax: orderItem.item_tax,
-        itemdiscount: orderItem.item_discount,
-        itemcess: orderItem.item_cess,
-        itemcost: orderItem.item_cost,
-        itemnetcost: orderItem.item_net_cost,
-        trxtotal: orderItem.trx_total,
-        statusflag: orderItem.status_flag,
+        linenum: lineNumber,
+        
+        
+        
+        orddate: cust.orddate,
+        itemcode: orderItem.itemcode,
+        itemname: orderItem.itemname,
+        itemqty: orderItem.itemqty,
+        itemfreeqty: orderItem.itemfreeqty,
+        itemmrp: orderItem.itemmrp,
+        itemprice: orderItem.itemprice,
+        itemtax: orderItem.itemtax,
+        itemdiscount: orderItem.itemdiscount,
+        itemcess: orderItem.itemcess,
+        itemcost: orderItem.itemcost,
+        itemnetcost: orderItem.itemnetcost,  
+        trxtotal: cust.trxtotal,
+        statusflag: "N",
         remarks: orderItem.remarks,
       }, { transaction: t });
     }
@@ -155,8 +313,36 @@ app.post("/order", async (req, res) => {
     });
 
     await t.commit();
+// Import the PDFKit library
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const doc = new PDFDocument();
 
-    res.json({ status: "success", ord_mast: ordMastResult, ord_trxfile: ordTrxFileResult });
+// Buffer to store PDF content
+const buffers = [];
+doc.on('data', buffers.push.bind(buffers));
+
+// Add content to the PDF document
+doc.fontSize(22).text('Ezbiz', 260, 50);
+doc.fontSize(16).text('Sl num                      Item name                      Qty', 100, 120);
+
+let count = 0;
+ordTrxFileResult.forEach((item, ind) => {
+  doc.fontSize(16).text(`    ${ind+1}                          ${item.itemname}                      ${item.itemqty}`, 100, 150 + count);
+  count += 16;
+});
+
+// Finalize the PDF document
+doc.end();
+
+// Send JSON response with PDF content as base64 encoded string
+doc.on('end', () => {
+  const pdfData = Buffer.concat(buffers);
+  const base64Data = pdfData.toString('base64');
+  return res.json({ status: "success", ord_mast: ordMastResult, ord_trxfile: ordTrxFileResult, pdf: base64Data });
+});
+
+    // res.json({ status: "success", ord_mast: ordMastResult, ord_trxfile: ordTrxFileResult });
   } catch (error) {
     await t.rollback();
     console.error(error);
