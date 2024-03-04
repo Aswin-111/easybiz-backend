@@ -25,6 +25,8 @@ const cust = require('./models/custmast')
 
 const Ordmast = require('./models/ordermast')
 const Ordertrxfile = require('./models/ordertrxfile')
+const Custmast = require('./models/custmast')
+const { log } = require('console')
 app.use(cors())
 app.use(express.json({limit : "10mb"}))
 app.post('/login',async (req,res)=>{
@@ -311,9 +313,17 @@ const cust = req.body.cust
       where: { ordnum: ordNumber },
       transaction: t
     });
-
+    const custmastresult = await Custmast.findOne({
+      where: { custcode: cust.custcode },
+      transaction: t
+    });
     await t.commit();
-// Import the PDFKit library
+
+
+    let custdata = custmastresult.dataValues
+    let orddata = ordMastResult.dataValues
+    console.log(custdata.custname,custdata.custaddress,custdata.custphone);
+    console.log(orddata.ordnum,orddata.orddate,orddata.trxtotal);
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const doc = new PDFDocument();
@@ -323,18 +333,47 @@ const buffers = [];
 doc.on('data', buffers.push.bind(buffers));
 
 // Add content to the PDF document
-doc.fontSize(22).text('Ezbiz', 260, 50);
-doc.fontSize(16).text('Sl num                      Item name                      Qty', 100, 120);
+doc.fontSize(22).text('Ezbiz', 260, 50)
+
+doc.fontSize(16).text(custdata.custname, 50, 70)
+doc.fontSize(16).text(custdata.custaddress, 50, 90)
+
+doc.fontSize(16).text(`Date : ${orddata.orddate}`, 400, 70)
+
+doc.fontSize(16).text(`Number : ${orddata.ordnum}`, 400, 90)
+
+
+
+doc.fontSize(16).text('Sl num             Item name             Qty             Rate              Amount',40, 120);
 
 let count = 0;
 ordTrxFileResult.forEach((item, ind) => {
-  doc.fontSize(16).text(`    ${ind+1}                          ${item.itemname}                      ${item.itemqty}`, 100, 150 + count);
+  
+  doc.fontSize(16).text(`${ind+1}         ${item.itemname}          ${item.itemqty}         ${(Number(item.trxtotal)/Number(item.itemqty)).toFixed(2)}        ${(Number(item.trxtotal).toFixed(2))}`, 60, 150 + count);
   count += 16;
 });
+doc.fontSize(22).text(`subtotal : ${(Number(orddata.trxtotal)).toFixed(2)}`, 360, count + 300)
 
 // Finalize the PDF document
 doc.end();
 
+
+
+  
+
+
+
+
+
+
+
+
+// console.log(ordTrxFileResult)
+
+// custname: 'Premier Supermarket',
+//   custaddress: 'Shop 1, Kayamkulam',
+//   custphone: '1233456771', product name qty amount
+// ordnum orddate
 // Send JSON response with PDF content as base64 encoded string
 doc.on('end', () => {
   const pdfData = Buffer.concat(buffers);
