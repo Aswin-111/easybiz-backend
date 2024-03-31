@@ -29,6 +29,7 @@ const Custmast = require('./models/custmast')
 const { log } = require('console')
 app.use(cors())
 app.use(express.json({limit : "10mb"}))
+
 app.post('/login',async (req,res)=>{
 try{
     const {username,password} = req.body
@@ -51,7 +52,67 @@ try{
     return res.status(404).json({message:err,status:"false"})
   }
 })
+app.post("/addcustomer", async (req, res) => {
+  
+const {compcode,custname,custaddress,custarea,custphone,custtype} = req.body
+// compcode: userdata.compcode,
+// custname : `${custname}*`,
+// custaddress,
+// custarea,
+// custphone,
+// custtype
+try{
+  const CustCode = await Custmast.max('custcode');
+  const custcode = await Custmast.findAll({
+    where: { compcode:compcode },
 
+  });
+
+
+  
+  
+  
+
+  
+  
+  const custcodes = custcode.map(i=>Number(i.custcode))
+  console.log()
+  const newCustCode = Math.max(...custcodes) + 1;
+  console.log(compcode,custname,custaddress,custarea,custphone,custtype,newCustCode);
+
+  const result = await Custmast.create({
+    custcode: `${newCustCode}`,
+    compcode,
+    custname,
+    custarea,
+    custaddress,
+    custphone,
+    custtype,
+    custgst : 0,
+    oldbal:0
+  });
+
+
+
+  return res.status(200).json({ status: "success",result });
+
+}
+  
+
+    
+    
+    
+  
+      catch(err){
+        
+
+        
+        console.log(err);
+    return res.status(404).json({ status: "failed" });
+        
+      }
+
+});
 
 
 app.post("/getOrders", async (req, res) => {
@@ -79,7 +140,12 @@ return res.status(200).json({ status: "success",result });
 app.post("/cust", async (req, res) => {
  
           const { compcode } = req.body;
-    const result = await cust.findAll({where : {compcode: compcode}});
+          
+          
+          
+          
+          
+          const result = await cust.findAll({where : {compcode: compcode}});
     
     if(!result){
     return res.status(404).json({ status: "failed" });
@@ -117,7 +183,14 @@ app.post("/cust", async (req, res) => {
 
 
   
-  
+  app.get("/custqwerty", async (req, res) => {
+
+
+return res.status(200).json({ status: "success" });
+
+
+});
+
 
 
   app.post("/item", async (req, res) => {
@@ -332,32 +405,75 @@ const doc = new PDFDocument();
 const buffers = [];
 doc.on('data', buffers.push.bind(buffers));
 
+// important
+
 // Add content to the PDF document
+// doc.fontSize(22).text('Ezbiz', 260, 50)
+
+// doc.fontSize(16).text(custdata.custname, 50, 70)
+// doc.fontSize(16).text(custdata.custaddress, 50, 90)
+
+// doc.fontSize(16).text(`Date : ${orddata.orddate}`, 400, 70)
+
+// doc.fontSize(16).text(`Number : ${orddata.ordnum}`, 400, 90)
+
+
+
+// doc.fontSize(16).text('Sl num             Item name             Qty             Rate              Amount',40, 120);
+
+// let count = 0;
+// ordTrxFileResult.forEach((item, ind) => {
+  
+//   doc.fontSize(16).text(`${ind+1}         ${item.itemname}          ${item.itemqty}         ${(Number(item.trxtotal)/Number(item.itemqty)).toFixed(2)}        ${(Number(item.trxtotal).toFixed(2))}`, 60, 150 + count);
+//   count += 16;
+// });
+// doc.fontSize(22).text(`subtotal : ${(Number(orddata.trxtotal)).toFixed(2)}`, 360, count + 300)
+
+// // Finalize the PDF document
+// doc.end();
+// new code
+
+
 doc.fontSize(22).text('Ezbiz', 260, 50)
 
 doc.fontSize(16).text(custdata.custname, 50, 70)
 doc.fontSize(16).text(custdata.custaddress, 50, 90)
 
 doc.fontSize(16).text(`Date : ${orddata.orddate}`, 400, 70)
-
 doc.fontSize(16).text(`Number : ${orddata.ordnum}`, 400, 90)
 
+// Table Header
+doc.fontSize(16).text('Sl num', 40, 120);
+doc.text('Item name', 140, 120);
+doc.text('Qty', 280, 120);
+doc.text('Rate', 360, 120);
+doc.text('Amount', 460, 120);
 
+let startY = 140; // Initial Y position for table content
 
-doc.fontSize(16).text('Sl num             Item name             Qty             Rate              Amount',40, 120);
+// Populate table with order items
+ordTrxFileResult.forEach((item, index) => {
+    const { itemname, itemqty, trxtotal } = item;
+    const rate = (Number(trxtotal) / Number(itemqty)).toFixed(2);
+    const amount = Number(trxtotal).toFixed(2);
 
-let count = 0;
-ordTrxFileResult.forEach((item, ind) => {
-  
-  doc.fontSize(16).text(`${ind+1}         ${item.itemname}          ${item.itemqty}         ${(Number(item.trxtotal)/Number(item.itemqty)).toFixed(2)}        ${(Number(item.trxtotal).toFixed(2))}`, 60, 150 + count);
-  count += 16;
+    doc.fontSize(16).text(`${index + 1}`, 40, startY);
+    doc.text(itemname, 140, startY);
+    doc.text(itemqty.toString(), 280, startY);
+    doc.text(rate.toString(), 360, startY);
+    doc.text(amount.toString(), 460, startY);
+
+    startY += 20; // Increment Y position for next row
 });
-doc.fontSize(22).text(`subtotal : ${(Number(orddata.trxtotal)).toFixed(2)}`, 360, count + 300)
+
+// Calculate subtotal
+const subtotal = Number(orddata.trxtotal).toFixed(2);
+
+// Display subtotal
+doc.fontSize(22).text(`Subtotal : ${subtotal}`, 360, startY + 40);
 
 // Finalize the PDF document
 doc.end();
-
-
 
   
 
@@ -389,5 +505,3 @@ doc.on('end', () => {
   }
 });
 app.listen(7000)
-
-
